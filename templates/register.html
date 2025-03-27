@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıt Ol</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .form-title {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .form-container {
+            background-color: #f7f7f7;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .btn-submit {
+            display: block;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <div class="form-container">
+        <h2 class="form-title">Kayıt Ol</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username">Kullanıcı Adı</label>
+                <input type="text" name="username" class="form-control" id="username" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" name="email" class="form-control" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Parola</label>
+                <input type="password" name="password" class="form-control" id="password" required>
+            </div>
+            <div class="form-group">
+                <label for="password2">Parolayı Doğrula</label>
+                <input type="password" name="password2" class="form-control" id="password2" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-submit">Kayıt Ol</button>
+            <div class="text-center mt-3">
+                <p>Hesabınız var mı? <a href="{% url 'login' %}">Giriş Yap</a></p>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

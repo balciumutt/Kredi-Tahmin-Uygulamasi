@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tüm Kredi Risk Başvuruları</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .form-title {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .form-container {
+            background-color: #f7f7f7;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+        .credit-risk-table {
+            margin-top: 30px;
+        }
+        .status-icon {
+            font-size: 18px;
+            vertical-align: middle;
+        }
+        .status-waiting {
+            color: orange;
+        }
+        .status-approved {
+            color: green;
+        }
+        .status-rejected {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Ana Sayfa</h1>
+        {% if user.is_authenticated %}
+            <p class="text-center">Merhaba, {{ user.username }}! <a href="{% url 'logout' %}">Çıkış Yap</a></p>
+        {% else %}
+            <p class="text-center"><a href="{% url 'login' %}">Giriş Yap</a></p>
+        {% endif %}
+    </div>
+
+<div class="container">
+    <div class="form-container">
+        <h2 class="form-title">Tüm Kredi Risk Başvuruları</h2>
+        {% if messages %}
+            <div class="mt-4">
+                {% for message in messages %}
+                {% if message.tags == "success" %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% else %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% if credit_risks %}
+            <table class="table table-striped credit-risk-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Başvuru Durumu</th>
+                        <th scope="col">İstenen Kredi Miktarı</th>
+                        <th scope="col">Vade</th>
+                        <th scope="col">Kredi Skoru</th>
+                        <th scope="col">Yıllık Gelir</th>
+                        <th scope="col">Aylık Borç</th>
+                        <th scope="col">Kredi Geçmişi Yılı</th>
+                        <th scope="col">Kredi Amacı</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for risk in credit_risks %}
+                        <tr>
+                            <td>
+                                {% if risk.application_status == 'Beklemede' %}
+                                    <span class="status-icon status-waiting">🕒</span> Beklemede
+                                {% elif risk.application_status == 'Kabul Edildi' %}
+                                    <span class="status-icon status-approved">✔️</span> Kabul Edildi
+                                {% elif risk.application_status == 'Reddedildi' %}
+                                    <span class="status-icon status-rejected">❌</span> Reddedildi
+                                {% endif %}
+                            </td>
+                            <td>{{ risk.current_loan_amount }}</td>
+                            
+                            {% if risk.term  == 0 %}
+                                <td>Kısa Vade</td>
+                            {% else %}
+                                <td>Uzun Vade</td>
+                            {% endif %}
+
+                            <td>{{ risk.credit_score }} </td>
+                            <td>${{ risk.annual_income }}</td>
+                            <td>${{ risk.monthly_debt }}</td>
+                            <td>{{ risk.years_of_credit_history }}</td>
+                            <td>{{ risk.purpose }}</td>
+                            <td>
+                                {% if risk.application_status == 'Beklemede' %}
+                                    <form method="post" style="display:inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="credit_risk_id" value="{{ risk.id }}">
+                                        <input type="hidden" name="action" value="approve">
+                                        <button type="submit" class="btn btn-success btn-sm">Onayla</button>
+                                    </form>
+                                    <form method="post" style="display:inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="credit_risk_id" value="{{ risk.id }}">
+                                        <input type="hidden" name="action" value="reject">
+                                        <button type="submit" class="btn btn-danger btn-sm">Reddet</button>
+                                    </form>
+                                {% endif %}
+                                <form method="post" action="{% url 'predict-risk' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="credit_risk_id" value="{{ risk.id }}">
+                                    <button type="submit" class="btn btn-info btn-sm mt-2">Yapay Zeka ile Tahmin Ettir</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Henüz kredi risk başvurusu yapılmamış.</p>
+        {% endif %}
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

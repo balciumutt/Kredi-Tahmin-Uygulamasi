@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Başarılı</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        {% if user.is_authenticated %}
+            <p class="text-center">Merhaba, {{ user.username }}! <a href="{% url 'logout' %}">Çıkış Yap</a></p>
+            <div class="text-center">
+                <a href="{% url 'index' %}" class="btn btn-info btn-custom">Anasayfa</a>
+                <a href="{% url 'my-credit-risks' %}" class="btn btn-info btn-custom">Başvurularımı Gör</a>
+            </div>
+        {% else %}
+            <p class="text-center"><a href="{% url 'login' %}">Giriş Yap</a></p>
+        {% endif %}
+    </div>
+<div class="container mt-5">
+    <div class="alert alert-success">
+        <h4 class="alert-heading">Başarılı!</h4>
+        <p>Formunuz başarıyla gönderildi.</p>
+    </div>
+</div>
+</body>
+</html>
